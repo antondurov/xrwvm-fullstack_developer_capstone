@@ -21,6 +21,7 @@ const Register = () => {
 // Handle form submission
   const register = async (e) => {
     e.preventDefault();
+    console.log("Register button clicked");
 
     let register_url = window.location.origin+"/djangoapp/register";
 

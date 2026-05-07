@@ -23,7 +23,7 @@ const Register = () => {
     e.preventDefault();
     console.log("Register button clicked");
 
-    let register_url = window.location.origin+"/djangoapp/register";
+    let register_url = window.location.origin+"/djangoapp/register/";
 
 // Send POST request to register endpoint
     const res = await fetch(register_url, {

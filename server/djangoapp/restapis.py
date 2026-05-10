@@ -30,16 +30,22 @@ def get_request(endpoint, **kwargs):
         print("Network exception occurred")
 
 
+
+
 def analyze_review_sentiments(text):
-    print(sentiment_analyzer_url)
+
     try:
         encoded_text = quote(text)
-        request_url = sentiment_analyzer_url + "analyze/" + encoded_text
-        response = requests.get(request_url, timeout=5)
+        url = f"{sentiment_analyzer_url.rstrip('/')}/analyze/{encoded_text}"
+        response = requests.get(url, timeout=5)
+        print("STATUS:", response.status_code)
+        print("RAW RESPONSE:", response.text)
+        if response.status_code != 200:
+            return None
         return response.json()
+
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
-        print("Network exception occurred")
         return None
 
 

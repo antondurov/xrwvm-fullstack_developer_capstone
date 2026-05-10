@@ -2,6 +2,7 @@
 import requests
 import os
 from dotenv import load_dotenv
+from urllib.parse import quote
 
 load_dotenv()
 
@@ -30,14 +31,16 @@ def get_request(endpoint, **kwargs):
 
 
 def analyze_review_sentiments(text):
-    request_url = sentiment_analyzer_url+"analyze/"+text
+    print(sentiment_analyzer_url)
     try:
-        # Call get method of requests library with URL and parameters
-        response = requests.get(request_url)
+        encoded_text = quote(text)
+        request_url = sentiment_analyzer_url + "analyze/" + encoded_text
+        response = requests.get(request_url, timeout=5)
         return response.json()
     except Exception as err:
         print(f"Unexpected {err=}, {type(err)=}")
         print("Network exception occurred")
+        return None
 
 
 # def post_review(data_dict):

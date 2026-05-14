@@ -46,7 +46,8 @@ class Migration(migrations.Migration):
                     django.core.validators.MaxValueValidator(2026),
                     django.core.validators.MinValueValidator(2010)])),
                 ('car_make', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, to='djangoapp.carmake'
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='djangoapp.carmake'
                     )),
             ],
         ),

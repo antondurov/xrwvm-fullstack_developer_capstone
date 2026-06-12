@@ -1,114 +1,70 @@
-# Fullstack Developer Capstone
+# Fullstack Developer Capstone — Dealership Reviews
 
-A comprehensive fullstack web application project demonstrating modern web development practices with React frontend, Node.js/Express backend, and MongoDB database.
+A car dealership reviews application built as a multi-service fullstack project:
 
-## 📋 Project Overview
+- **Django backend** (`server/`) — main web app & API gateway, runs on port `8000`
+- **Node.js dealership microservice** (`server/database/`) — Express + MongoDB, serves dealer and review data on port `3030`
+- **React frontend** (`server/frontend/`) — user-facing UI on port `3000`
+- **MongoDB** — persistence for the Node microservice, port `27017`
 
-This capstone project is a user management system that showcases a complete fullstack development workflow. It combines a React-based frontend with an Express.js backend API and MongoDB database to create a scalable, production-ready application.
+The Django backend proxies dealership/review reads to the Node microservice (see `server/djangoapp/restapis.py`) and owns user auth, sessions, and the rest of the UI integration.
 
-## 🏗️ Project Architecture
+## Quickstart
 
-### Frontend (`server/frontend`)
-- **Framework**: React 18.2.0
-- **Router**: React Router DOM 6.19.0
-- **Build Tool**: Create React App
-- **Testing**: Jest with React Testing Library
-- **Purpose**: User management interface with routing capabilities
+This repo uses [`just`](https://github.com/casey/just) as a task runner so first-time setup is one command.
 
-### Backend (`server/database`)
-- **Runtime**: Node.js
-- **Server**: Express.js 4.18.2
-- **Database Driver**: MongoDB 6.3.0 with Mongoose 8.0.1 ODM
-- **Middleware**: CORS enabled for frontend communication
-- **Purpose**: RESTful API for user management operations
+### 2. Prerequisites
 
-### Server Configuration (`server`)
-- **Package Name**: server
-- **License**: ISC
-- **Dependencies**: Integration with Django framework reference
+- **Python 3.10+** (the Dockerfile uses 3.12)
+- **Node.js 18+** and **npm**
+- **Docker** (only needed for MongoDB / the Node service via compose)
 
-## 🚀 Getting Started
+### 3. Bootstrap everything
 
-### Prerequisites
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- MongoDB (local or cloud instance)
+```bash
+just bootstrap
+```
 
-### Installation
+This installs Python deps into `server/.venv`, then runs `npm install` for both the React frontend and the Node database microservice.
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/antondurov/xrwvm-fullstack_developer_capstone.git
-   cd xrwvm-fullstack_developer_capstone
-   ```
+### 4. Run the services
 
-2. **Install backend dependencies**
-   ```bash
-   cd server/database
-   npm install
-   ```
+Open three terminals (or use a multiplexer):
 
-3. **Install frontend dependencies**
-   ```bash
-   cd ../frontend
-   npm install
-   ```
+```bash
+just db-up    # MongoDB + Node dealership API (via docker compose)
+just backend     # Django on http://localhost:8000
+just frontend    # React on http://localhost:3000
+```
 
-## 📦 Available Scripts
-
-### Frontend (`server/frontend`)
-
-- **`npm start`** - Runs the React app in development mode
-  - Open [http://localhost:3000](http://localhost:3000) to view it in the browser
-  - Page will reload when changes are made
-
-- **`npm run build`** - Builds the app for production
-  - Output in the `build` folder
-  - Minified and optimized for best performance
-
-- **`npm test`** - Launches the test runner in interactive watch mode
-
-- **`npm run eject`** - Ejects from Create React App (one-way operation)
-
-### Backend (`server/database`)
-
-- **`npm start`** - Starts the Express server
-- **`npm test`** - Runs available tests
-
-## 💾 Database
-
-**MongoDB Configuration**
-- Uses Mongoose as the ODM (Object Document Mapper)
-- Enables connection to MongoDB local instance or MongoDB Atlas
-
-**CORS Setup**
-- Configured to allow requests from the React frontend
-- Enables secure cross-origin communication
-
-## 🔗 API Integration
-
-The frontend communicates with the backend API through:
-- Express.js RESTful endpoints
-- CORS middleware for browser requests
-- JSON data exchange
-
-## 📁 Project Structure
+Then visit <http://localhost:3000>.
+## Project structure
 
 ```
 xrwvm-fullstack_developer_capstone/
+├── justfile                    # dev task runner
 ├── server/
-│   ├── database/          # Backend API server
+│   ├── manage.py               # Django entry point
+│   ├── requirements.txt        # Django deps
+│   ├── Dockerfile              # Django + gunicorn image
+│   ├── entrypoint.sh           # migrations + collectstatic on container start
+│   ├── deployment.yaml         # Kubernetes deployment manifest
+│   ├── djangoproj/             # Django project settings, urls, wsgi
+│   ├── djangoapp/              # Main Django app (views, models, restapis)
+│   ├── database/               # Node.js Express + MongoDB microservice
 │   │   ├── app.js
-│   │   ├── package.json
-│   │   └── node_modules/
-│   ├── frontend/          # React frontend
-│   │   ├── src/
-│   │   ├── public/
-│   │   ├── package.json
-│   │   └── node_modules/
-│   └── package.json
+│   │   ├── dealership.js / review.js / inventory.js
+│   │   └── docker-compose.yml  # MongoDB + Node API
+│   └── frontend/               # React SPA
+│       ├── src/
+│       └── public/
 └── README.md
 ```
+
+## Deployment
+
+- The Django service has a `Dockerfile` (`server/Dockerfile`) that runs `gunicorn` on port `8000` and a Kubernetes manifest (`server/deployment.yaml`).
+- The Node microservice is brought up alongside MongoDB via `server/database/docker-compose.yml`.
 
 ## 🛠️ Technologies Used
 

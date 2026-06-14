@@ -1,8 +1,14 @@
-# Dealership Reviews — dev commands
-# Run `just` to see all recipes.
+default: run
 
-default:
+# List all available recipes
+list:
     @just --list
+
+# Build the frontend, then launch the full app on http://localhost:8000
+run: build-frontend
+    cd server && .venv/bin/python manage.py migrate --noinput
+    cd server && .venv/bin/python manage.py collectstatic --noinput
+    cd server && .venv/bin/python manage.py runserver
 
 # Install every dependency the project needs (Python venv + both Node services)
 bootstrap: bootstrap-backend bootstrap-frontend bootstrap-database
@@ -28,8 +34,13 @@ backend:
     cd server && .venv/bin/python manage.py migrate --noinput
     cd server && .venv/bin/python manage.py runserver
 
-# React frontend on http://localhost:3000
+# Build the React frontend for production (output: server/frontend/build)
+build-frontend:
+    cd server/frontend && npm run build
+
+# React dev server with hot-reload on http://localhost:3000 (SPA routes only — see README)
 frontend:
+    cd server/frontend && npm run build
     cd server/frontend && npm start
 
 # Node dealership API on http://localhost:3030 (needs MongoDB)
